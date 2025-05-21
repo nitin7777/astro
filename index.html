@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Astrology App</title>
+</head>
+<body>
+  <div id="root"></div>
+
+  <!-- React and Babel from CDN -->
+  <script src="https://unpkg.com/react@17/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+
+  <script type="text/babel">
+    function getZodiac(month, day) {
+      const date = month * 100 + day;
+      if (date >= 321 && date <= 419) return "Aries";
+      if (date >= 420 && date <= 520) return "Taurus";
+      if (date >= 521 && date <= 620) return "Gemini";
+      if (date >= 621 && date <= 722) return "Cancer";
+      if (date >= 723 && date <= 822) return "Leo";
+      if (date >= 823 && date <= 922) return "Virgo";
+      if (date >= 923 && date <= 1022) return "Libra";
+      if (date >= 1023 && date <= 1121) return "Scorpio";
+      if (date >= 1122 && date <= 1221) return "Sagittarius";
+      if ((date >= 1222 && date <= 1231) || (date >= 101 && date <= 119)) return "Capricorn";
+      if (date >= 120 && date <= 218) return "Aquarius";
+      if (date >= 219 && date <= 320) return "Pisces";
+      return "Unknown";
+    }
+
+    const descriptions = {
+      Aries: "Energetic, candid, and willful.",
+      Taurus: "Reliable, diligent, and conservative.",
+      Gemini: "Quick-witted, capricious, and cheerful.",
+      Cancer: "Considerate, imaginative, and sensitive.",
+      Leo: "Enthusiastic, proud, and expansive.",
+      Virgo: "Elegant, perfectionist, and organized.",
+      Libra: "Just, kind, and diplomatic.",
+      Scorpio: "Insightful, mysterious, and passionate.",
+      Sagittarius: "Unconstrained, lively, and optimistic.",
+      Capricorn: "Practical, prudent, and patient.",
+      Aquarius: "Unique, wise, and idealistic.",
+      Pisces: "Romantic, kind, and gentle.",
+    };
+
+    function AstroApp() {
+      const [month, setMonth] = React.useState(1);
+      const [day, setDay] = React.useState(1);
+      const [sign, setSign] = React.useState(null);
+
+      const handleSubmit = (e) => {
+        e.preventDefault();
+        const zodiac = getZodiac(parseInt(month), parseInt(day));
+        setSign(zodiac);
+      };
+
+      return (
+        <div style={{fontFamily: 'Arial', padding: '20px'}}>
+          <h1>Astrology App</h1>
+          <form onSubmit={handleSubmit}>
+            <label>
+              Month:
+              <input type="number" value={month} onChange={(e) => setMonth(e.target.value)} min="1" max="12" required />
+            </label>
+            <label style={{marginLeft: '10px'}}>
+              Day:
+              <input type="number" value={day} onChange={(e) => setDay(e.target.value)} min="1" max="31" required />
+            </label>
+            <button type="submit" style={{marginLeft: '10px'}}>Find My Sign</button>
+          </form>
+          {sign && (
+            <div style={{marginTop: '20px'}}>
+              <h2>Your sign: {sign}</h2>
+              <p>{descriptions[sign]}</p>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    ReactDOM.render(<AstroApp />, document.getElementById('root'));
+  </script>
+</body>
+</html>
