@@ -7,6 +7,12 @@ This is a React-based astrology application. In addition to the basic western zo
 
 ## Running
 
-Open `index.html` in your browser. The page loads React and Babel from a CDN and runs entirely in the browser. No build step or server is required.
+Start a small Node server and open the app in your browser:
+
+```bash
+node server.js
+```
+
+Then navigate to <http://localhost:3000>.
 
 Enter your birth month, day and year and click **Calculate** to see your western sign, Vedic sign and Life Path number.
