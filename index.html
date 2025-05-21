@@ -4,6 +4,9 @@
   <meta charset="UTF-8">
   <title>Astrology App</title>
   <link rel="stylesheet" href="style.css" />
+  <!-- Google Sign-In and JWT decode libraries -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jwt-decode/3.1.2/jwt-decode.min.js"></script>
 </head>
 <body>
   <div id="root"></div>
@@ -73,6 +76,33 @@
       const [sign, setSign] = React.useState(null);
       const [vedicSign, setVedicSign] = React.useState(null);
       const [lifePath, setLifePath] = React.useState(null);
+      const [user, setUser] = React.useState(() => {
+        const stored = localStorage.getItem('astroUser');
+        return stored ? JSON.parse(stored) : null;
+      });
+
+      React.useEffect(() => {
+        if (user) return;
+        window.handleCredentialResponse = (response) => {
+          const data = jwt_decode(response.credential);
+          setUser(data);
+          localStorage.setItem('astroUser', JSON.stringify(data));
+        };
+        google.accounts.id.initialize({
+          client_id: 'YOUR_GOOGLE_CLIENT_ID', // replace with your client ID
+          callback: handleCredentialResponse,
+        });
+        google.accounts.id.renderButton(
+          document.getElementById('googleSignInButton'),
+          { theme: 'outline', size: 'large' }
+        );
+      }, [user]);
+
+      const handleSignOut = () => {
+        setUser(null);
+        localStorage.removeItem('astroUser');
+        google.accounts.id.disableAutoSelect();
+      };
 
       const handleSubmit = (e) => {
         e.preventDefault();
@@ -87,9 +117,21 @@
         setLifePath(lp);
       };
 
+      if (!user) {
+        return (
+          <div className="card">
+            <h1>Astrology App</h1>
+            <div id="googleSignInButton"></div>
+          </div>
+        );
+      }
+
       return (
         <div className="card">
-          <h1>Astrology App</h1>
+          <div className="header">
+            <h2>Welcome {user.name}</h2>
+            <button className="signout" onClick={handleSignOut}>Sign Out</button>
+          </div>
           <form onSubmit={handleSubmit}>
             <div className="field">
               <label>Month</label>

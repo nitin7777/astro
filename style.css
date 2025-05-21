@@ -59,3 +59,20 @@ button:hover {
   margin-top: 20px;
   text-align: center;
 }
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.signout {
+  background-color: #dc3545;
+  width: auto;
+  padding: 6px 12px;
+}
+
+.signout:hover {
+  background-color: #c82333;
+}
