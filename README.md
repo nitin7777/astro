@@ -1,9 +1,12 @@
 # Astrology App
 
-This is a simple React-based astrology application. It lets you enter a birth month and day and returns the corresponding zodiac sign along with a short description.
+This is a React-based astrology application. In addition to the basic western zodiac sign it now includes:
+
+- **Numerology**: calculates a simple Life Path number using your birth year, month and day.
+- **Vedic Moon Astrology**: approximates your Vedic (moon) sign by shifting the western zodiac one sign back.
 
 ## Running
 
-Open `index.html` in your browser. The page loads React and Babel from a CDN and runs entirely in the browser.
+Open `index.html` in your browser. The page loads React and Babel from a CDN and runs entirely in the browser. No build step or server is required.
 
-No build step or server is required.
+Enter your birth month, day and year and click **Calculate** to see your western sign, Vedic sign and Life Path number.

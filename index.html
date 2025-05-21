@@ -30,6 +30,26 @@
       return "Unknown";
     }
 
+    function getVedicSign(month, day) {
+      const signs = ["Aries","Taurus","Gemini","Cancer","Leo","Virgo","Libra","Scorpio","Sagittarius","Capricorn","Aquarius","Pisces"];
+      const western = getZodiac(month, day);
+      const idx = signs.indexOf(western);
+      const vedicIdx = (idx + 11) % 12; // simple shift for sidereal sign
+      return signs[vedicIdx];
+    }
+
+    function getLifePathNumber(year, month, day) {
+      const digits = ("" + year + month + day).split("");
+      let sum = digits.reduce((s, d) => s + parseInt(d, 10), 0);
+      const reduce = (num) => {
+        while (num > 9 && num !== 11 && num !== 22 && num !== 33) {
+          num = num.toString().split("").reduce((s, d) => s + parseInt(d, 10), 0);
+        }
+        return num;
+      };
+      return reduce(sum);
+    }
+
     const descriptions = {
       Aries: "Energetic, candid, and willful.",
       Taurus: "Reliable, diligent, and conservative.",
@@ -48,12 +68,22 @@
     function AstroApp() {
       const [month, setMonth] = React.useState(1);
       const [day, setDay] = React.useState(1);
+      const [year, setYear] = React.useState(2000);
       const [sign, setSign] = React.useState(null);
+      const [vedicSign, setVedicSign] = React.useState(null);
+      const [lifePath, setLifePath] = React.useState(null);
 
       const handleSubmit = (e) => {
         e.preventDefault();
-        const zodiac = getZodiac(parseInt(month), parseInt(day));
+        const m = parseInt(month, 10);
+        const d = parseInt(day, 10);
+        const y = parseInt(year, 10);
+        const zodiac = getZodiac(m, d);
+        const vedic = getVedicSign(m, d);
+        const lp = getLifePathNumber(y, m, d);
         setSign(zodiac);
+        setVedicSign(vedic);
+        setLifePath(lp);
       };
 
       return (
@@ -68,12 +98,18 @@
               Day:
               <input type="number" value={day} onChange={(e) => setDay(e.target.value)} min="1" max="31" required />
             </label>
-            <button type="submit" style={{marginLeft: '10px'}}>Find My Sign</button>
+            <label style={{marginLeft: '10px'}}>
+              Year:
+              <input type="number" value={year} onChange={(e) => setYear(e.target.value)} min="1900" max="2100" required />
+            </label>
+            <button type="submit" style={{marginLeft: '10px'}}>Calculate</button>
           </form>
           {sign && (
             <div style={{marginTop: '20px'}}>
-              <h2>Your sign: {sign}</h2>
+              <h2>Your Western Zodiac sign: {sign}</h2>
               <p>{descriptions[sign]}</p>
+              <h3>Vedic (Moon) sign: {vedicSign}</h3>
+              <h3>Life Path Number: {lifePath}</h3>
             </div>
           )}
         </div>
