@@ -7,7 +7,13 @@ This is a React-based astrology application. In addition to the basic western zo
 
 ## Running
 
-Open `index.html` in your browser. The page loads React and Babel from a CDN and runs entirely in the browser. No build step or server is required.
+Start a small Node server and open the app in your browser:
+
+```bash
+node server.js
+```
+
+Then navigate to <http://localhost:3000>.
 
 The page now supports signing up with your Google account. Create a Google OAuth client and replace `YOUR_GOOGLE_CLIENT_ID` in `index.html` with your client ID. After signing in you can view your personal astrology profile.
 
