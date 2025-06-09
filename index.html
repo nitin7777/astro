@@ -79,6 +79,8 @@
       const [showCamera, setShowCamera] = React.useState(false);
       const videoRef = React.useRef(null);
       const canvasRef = React.useRef(null);
+      const overlayRef = React.useRef(null);
+      const detectLoop = React.useRef(null);
       const [photo, setPhoto] = React.useState(null);
       const [palmistry, setPalmistry] = React.useState(null);
       const [user, setUser] = React.useState(() => {
@@ -136,6 +138,7 @@
             setShowCamera(true);
             if (videoRef.current) {
               videoRef.current.srcObject = stream;
+              videoRef.current.onloadedmetadata = startPalmDetection;
             }
           })
           .catch(err => console.error('Camera error:', err));
@@ -144,6 +147,7 @@
       const capturePhoto = () => {
         const video = videoRef.current;
         const canvas = canvasRef.current;
+        stopPalmDetection();
         if (video && canvas) {
           canvas.width = video.videoWidth;
           canvas.height = video.videoHeight;
@@ -155,6 +159,47 @@
             video.srcObject.getTracks().forEach(track => track.stop());
           }
           setShowCamera(false);
+        }
+      };
+
+      const startPalmDetection = () => {
+        stopPalmDetection();
+        const video = videoRef.current;
+        const overlay = overlayRef.current;
+        if (!video || !overlay) return;
+        const ctx = overlay.getContext('2d');
+        const detect = () => {
+          if (!showCamera) return;
+          overlay.width = video.videoWidth;
+          overlay.height = video.videoHeight;
+          ctx.drawImage(video, 0, 0, overlay.width, overlay.height);
+          const img = ctx.getImageData(0, 0, overlay.width, overlay.height);
+          const palmCheck = containsPalm(img.data, overlay.width, overlay.height);
+          ctx.clearRect(0, 0, overlay.width, overlay.height);
+          if (palmCheck.detected && palmCheck.bounds) {
+            ctx.strokeStyle = 'rgba(0, 255, 0, 0.8)';
+            ctx.lineWidth = 3;
+            ctx.strokeRect(
+              palmCheck.bounds.x,
+              palmCheck.bounds.y,
+              palmCheck.bounds.width,
+              palmCheck.bounds.height
+            );
+          }
+          detectLoop.current = requestAnimationFrame(detect);
+        };
+        detect();
+      };
+
+      const stopPalmDetection = () => {
+        if (detectLoop.current) {
+          cancelAnimationFrame(detectLoop.current);
+          detectLoop.current = null;
+        }
+        const overlay = overlayRef.current;
+        if (overlay) {
+          const ctx = overlay.getContext('2d');
+          ctx.clearRect(0, 0, overlay.width, overlay.height);
         }
       };
 
@@ -340,6 +385,7 @@
             {showCamera && (
               <div className="camera">
                 <video ref={videoRef} autoPlay playsInline></video>
+                <canvas ref={overlayRef} className="overlay-canvas"></canvas>
                 <button onClick={capturePhoto}>Capture</button>
                 <p className="hint">Ensure your hand is sharp and fills the frame. Retake if needed.</p>
               </div>

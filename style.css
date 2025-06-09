@@ -91,6 +91,7 @@ button:hover {
   display: flex;
   flex-direction: column;
   align-items: center;
+  position: relative;
 }
 
 .camera video {
@@ -125,4 +126,14 @@ button:hover {
   border-radius: 4px;
   margin-top: 10px;
   margin-bottom: 10px;
+}
+
+.overlay-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  max-width: 300px;
+  border-radius: 4px;
+  pointer-events: none;
 }
