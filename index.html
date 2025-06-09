@@ -271,9 +271,9 @@
                 <button onClick={capturePhoto}>Capture</button>
               </div>
             )}
+            <canvas ref={canvasRef} style={{ display: 'none' }}></canvas>
             {photo && (
               <div className="photo-result">
-                <canvas ref={canvasRef} style={{ display: 'none' }}></canvas>
                 <img src={photo} alt="Hand snapshot" />
                 <button onClick={analyzePalm}>Analyze Palm</button>
               </div>
