@@ -118,3 +118,11 @@ button:hover {
   text-align: center;
   color: #555;
 }
+
+.photo-canvas {
+  width: 100%;
+  max-width: 300px;
+  border-radius: 4px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}

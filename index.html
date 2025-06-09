@@ -179,26 +179,39 @@
 
       const containsPalm = (data, width, height) => {
         let skin = 0;
-        const total = data.length / 4;
-        for (let i = 0; i < data.length; i += 16) {
-          const r = data[i];
-          const g = data[i + 1];
-          const b = data[i + 2];
-          const max = Math.max(r, g, b);
-          const min = Math.min(r, g, b);
-          if (
-            r > 95 &&
-            g > 40 &&
-            b > 20 &&
-            r > g &&
-            r > b &&
-            max - min > 15 &&
-            Math.abs(r - g) > 15
-          ) {
-            skin++;
+        let samples = 0;
+        let minX = width, minY = height, maxX = 0, maxY = 0;
+        for (let y = 0; y < height; y += 2) {
+          for (let x = 0; x < width; x += 2) {
+            samples++;
+            const i = (y * width + x) * 4;
+            const r = data[i];
+            const g = data[i + 1];
+            const b = data[i + 2];
+            const max = Math.max(r, g, b);
+            const min = Math.min(r, g, b);
+            if (
+              r > 95 &&
+              g > 40 &&
+              b > 20 &&
+              r > g &&
+              r > b &&
+              max - min > 15 &&
+              Math.abs(r - g) > 15
+            ) {
+              skin++;
+              if (x < minX) minX = x;
+              if (y < minY) minY = y;
+              if (x > maxX) maxX = x;
+              if (y > maxY) maxY = y;
+            }
           }
         }
-        return skin / total > 0.2;
+        const detected = skin / samples > 0.2;
+        const bounds = detected
+          ? { x: minX, y: minY, width: maxX - minX, height: maxY - minY }
+          : null;
+        return { detected, bounds };
       };
 
       const analyzePalm = () => {
@@ -212,9 +225,17 @@
           setPalmistry('Image too blurry. Please retake the photo.');
           return;
         }
-        if (!containsPalm(data, width, height)) {
+        const palmCheck = containsPalm(data, width, height);
+        if (!palmCheck.detected) {
           setPalmistry('No palm detected. Please retake the photo with your hand clearly visible.');
           return;
+        }
+        if (palmCheck.bounds) {
+          ctx.strokeStyle = 'rgba(0, 255, 0, 0.8)';
+          ctx.lineWidth = 3;
+          ctx.strokeRect(palmCheck.bounds.x, palmCheck.bounds.y, palmCheck.bounds.width, palmCheck.bounds.height);
+          ctx.fillStyle = 'rgba(0, 255, 0, 0.2)';
+          ctx.fillRect(palmCheck.bounds.x, palmCheck.bounds.y, palmCheck.bounds.width, palmCheck.bounds.height);
         }
         const sections = [0, 0, 0]; // heart, head, life
         for (let y = 1; y < height; y++) {
@@ -323,10 +344,13 @@
                 <p className="hint">Ensure your hand is sharp and fills the frame. Retake if needed.</p>
               </div>
             )}
-            <canvas ref={canvasRef} style={{ display: 'none' }}></canvas>
+            <canvas
+              ref={canvasRef}
+              className="photo-canvas"
+              style={{ display: photo ? 'block' : 'none' }}
+            ></canvas>
             {photo && (
               <div className="photo-result">
-                <img src={photo} alt="Hand snapshot" />
                 <button onClick={analyzePalm}>Analyze Palm</button>
                 <p className="hint">If prompted, retake your photo for better results.</p>
               </div>
