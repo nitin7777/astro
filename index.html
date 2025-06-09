@@ -158,6 +158,49 @@
         }
       };
 
+      const isImageClear = (data, width, height) => {
+        let total = 0;
+        let count = 0;
+        for (let y = 1; y < height; y += 2) {
+          for (let x = 1; x < width; x += 2) {
+            const i = (y * width + x) * 4;
+            const lum = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
+            const iL = (y * width + (x - 1)) * 4;
+            const lumL = 0.299 * data[iL] + 0.587 * data[iL + 1] + 0.114 * data[iL + 2];
+            const iU = ((y - 1) * width + x) * 4;
+            const lumU = 0.299 * data[iU] + 0.587 * data[iU + 1] + 0.114 * data[iU + 2];
+            const edge = Math.abs(lum - lumL) + Math.abs(lum - lumU);
+            total += edge;
+            count++;
+          }
+        }
+        return total / count > 20;
+      };
+
+      const containsPalm = (data, width, height) => {
+        let skin = 0;
+        const total = data.length / 4;
+        for (let i = 0; i < data.length; i += 16) {
+          const r = data[i];
+          const g = data[i + 1];
+          const b = data[i + 2];
+          const max = Math.max(r, g, b);
+          const min = Math.min(r, g, b);
+          if (
+            r > 95 &&
+            g > 40 &&
+            b > 20 &&
+            r > g &&
+            r > b &&
+            max - min > 15 &&
+            Math.abs(r - g) > 15
+          ) {
+            skin++;
+          }
+        }
+        return skin / total > 0.2;
+      };
+
       const analyzePalm = () => {
         const canvas = canvasRef.current;
         if (!canvas) return;
@@ -165,6 +208,14 @@
         const { width, height } = canvas;
         const img = ctx.getImageData(0, 0, width, height);
         const data = img.data;
+        if (!isImageClear(data, width, height)) {
+          setPalmistry('Image too blurry. Please retake the photo.');
+          return;
+        }
+        if (!containsPalm(data, width, height)) {
+          setPalmistry('No palm detected. Please retake the photo with your hand clearly visible.');
+          return;
+        }
         const sections = [0, 0, 0]; // heart, head, life
         for (let y = 1; y < height; y++) {
           for (let x = 1; x < width; x++) {
@@ -269,6 +320,7 @@
               <div className="camera">
                 <video ref={videoRef} autoPlay playsInline></video>
                 <button onClick={capturePhoto}>Capture</button>
+                <p className="hint">Ensure your hand is sharp and fills the frame. Retake if needed.</p>
               </div>
             )}
             <canvas ref={canvasRef} style={{ display: 'none' }}></canvas>
@@ -276,6 +328,7 @@
               <div className="photo-result">
                 <img src={photo} alt="Hand snapshot" />
                 <button onClick={analyzePalm}>Analyze Palm</button>
+                <p className="hint">If prompted, retake your photo for better results.</p>
               </div>
             )}
             {palmistry && (
