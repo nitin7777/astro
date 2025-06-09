@@ -219,7 +219,8 @@
             count++;
           }
         }
-        return total / count > 20;
+        // Lowered threshold to reduce false blurry warnings on clear images
+        return total / count > 12;
       };
 
       const containsPalm = (data, width, height) => {

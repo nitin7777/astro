@@ -4,7 +4,7 @@ This is a React-based astrology application. In addition to the basic western zo
 
 - **Numerology**: calculates a simple Life Path number using your birth year, month and day.
 - **Vedic Moon Astrology**: approximates your Vedic (moon) sign by shifting the western zodiac one sign back.
-- **Palmistry**: open your webcam and capture a picture of your palm for a basic reading using simple line detection.
+- **Palmistry**: open your webcam and capture a picture of your palm for a basic reading using simple line detection. A green overlay highlights the detected palm region in real time.
 
 ## Running
 
