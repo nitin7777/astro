@@ -77,6 +77,15 @@ button:hover {
   background-color: #c82333;
 }
 
+.guest {
+  background-color: #6c757d;
+  margin-top: 10px;
+}
+
+.guest:hover {
+  background-color: #5a6268;
+}
+
 .camera {
   margin-top: 15px;
   display: flex;
