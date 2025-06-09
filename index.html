@@ -77,6 +77,7 @@
       const [vedicSign, setVedicSign] = React.useState(null);
       const [lifePath, setLifePath] = React.useState(null);
       const [showCamera, setShowCamera] = React.useState(false);
+      const [stream, setStream] = React.useState(null);
       const videoRef = React.useRef(null);
       const canvasRef = React.useRef(null);
       const overlayRef = React.useRef(null);
@@ -113,6 +114,12 @@
         }
       }, [showCamera]);
 
+      React.useEffect(() => {
+        if (showCamera && stream && videoRef.current) {
+          videoRef.current.srcObject = stream;
+        }
+      }, [showCamera, stream]);
+
       const handleSignOut = () => {
         setUser(null);
         localStorage.removeItem('astroUser');
@@ -142,11 +149,9 @@
         setPalmistry(null);
         setPhoto(null);
         navigator.mediaDevices.getUserMedia({ video: true })
-          .then(stream => {
+          .then(s => {
+            setStream(s);
             setShowCamera(true);
-            if (videoRef.current) {
-              videoRef.current.srcObject = stream;
-            }
           })
           .catch(err => console.error('Camera error:', err));
       };
@@ -165,6 +170,7 @@
           if (video.srcObject) {
             video.srcObject.getTracks().forEach(track => track.stop());
           }
+          setStream(null);
           setShowCamera(false);
         }
       };
