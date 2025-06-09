@@ -76,3 +76,29 @@ button:hover {
 .signout:hover {
   background-color: #c82333;
 }
+
+.camera {
+  margin-top: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.camera video {
+  width: 100%;
+  max-width: 300px;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+
+.photo-result img {
+  width: 100%;
+  max-width: 300px;
+  border-radius: 4px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.palmistry-section button {
+  margin-top: 10px;
+}
