@@ -109,6 +109,12 @@
         google.accounts.id.disableAutoSelect();
       };
 
+      const handleGuest = () => {
+        const guestUser = { name: 'Guest', guest: true };
+        setUser(guestUser);
+        localStorage.setItem('astroUser', JSON.stringify(guestUser));
+      };
+
       const handleSubmit = (e) => {
         e.preventDefault();
         const m = parseInt(month, 10);
@@ -202,6 +208,7 @@
           <div className="card">
             <h1>Astrology App</h1>
             <div id="googleSignInButton"></div>
+            <button className="guest" onClick={handleGuest}>Continue as Guest</button>
           </div>
         );
       }
