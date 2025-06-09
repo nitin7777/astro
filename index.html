@@ -105,6 +105,14 @@
         );
       }, [user]);
 
+      React.useEffect(() => {
+        if (showCamera) {
+          startPalmDetection();
+        } else {
+          stopPalmDetection();
+        }
+      }, [showCamera]);
+
       const handleSignOut = () => {
         setUser(null);
         localStorage.removeItem('astroUser');
@@ -138,7 +146,6 @@
             setShowCamera(true);
             if (videoRef.current) {
               videoRef.current.srcObject = stream;
-              videoRef.current.onloadedmetadata = startPalmDetection;
             }
           })
           .catch(err => console.error('Camera error:', err));
