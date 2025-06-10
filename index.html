@@ -117,6 +117,10 @@
       React.useEffect(() => {
         if (showCamera && stream && videoRef.current) {
           videoRef.current.srcObject = stream;
+          const playPromise = videoRef.current.play();
+          if (playPromise && playPromise.catch) {
+            playPromise.catch(err => console.error('Play error:', err));
+          }
         }
       }, [showCamera, stream]);
 
@@ -148,6 +152,10 @@
       const openCamera = () => {
         setPalmistry(null);
         setPhoto(null);
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+          console.error('Camera API not supported');
+          return;
+        }
         navigator.mediaDevices.getUserMedia({ video: true })
           .then(s => {
             setStream(s);
