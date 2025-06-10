@@ -232,7 +232,8 @@
             count++;
           }
         }
-        return total / count > 20;
+        // Lowered threshold to relax blur detection
+        return total / count > 10;
       };
 
       const containsPalm = (data, width, height) => {
